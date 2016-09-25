@@ -1,4 +1,7 @@
 <?php 
+	
+	require("../../config.php");
+	
 	//var_dump($_GET);
 	//echo "<br>";
 	//var_dump($_POST);
@@ -61,6 +64,77 @@
 		}
 	}
 	
+	if (isset($_POST["signupEmail"]) &&
+		isset($_POST["signupPassword"]) &&
+		$signupEmailError == "" &&
+		empty($signupPasswordError)
+	   ) {
+			
+		//ühtegi viga ei ole, kõik vajalik on olemas
+		echo "salvestan...";
+		echo "email ".$signupEmail."<br>";
+		echo "parool ".$_POST["signupPassword"]."<br>";
+		
+		$password = hash("sha512", $_POST["signupPassword"]);
+		
+		
+		echo "hash ".$password."<br>";
+		
+		
+		//ühendus
+		$database = "if16_kenkool";
+		$mysqli = new mysqli($serverHost, $serverUsername, $serverPassword, $database);
+		
+		//Kkäsk
+		$stmt = $mysqli->prepare("INSERT INTO user_sample (email, password) VALUES (?, ?)");
+		
+		echo $mysql->error;
+		
+		// s - string
+		// i - int
+		// d - decimal/double
+		// iga küsimärgi jaoks üks täht, mis tüüpi on
+		$stmt->bind_param("ss", $signupEmail, $password );
+		
+		if ( $stmt->execute() ) {
+			
+			echo " salvestamine õnnestus";
+			
+	   } else {
+		   
+		   echo"ERROR ".$stmt->error;
+	   
+			
+		}
+		
+		
+	}
+	
+	
+	$signupCountryError = "";
+	$signupCountry = "";
+	
+	//kas on üldse olemas
+	if (isset ($_POST["signupCountry"])) {
+		
+		// oli olemas, ehk keegi vajutas nuppu
+		// kas oli tühi
+		if (empty ($_POST["signuCountry"])) {
+			
+			//oli tõesti tühi
+			$signupCountryError = "See väli on kohustuslik";
+			
+		} else {
+				
+			// kõik korras, lahter ei ole tühi ja on olemas
+			$signupCountry = $_POST["signupCountry"];
+		}
+		
+	}
+	
+	
+	
+	
 	
 ?>
 <!DOCTYPE html>
@@ -119,10 +193,34 @@
 				<input type="radio" name="gender" value="other"> Muu<br>
 			<?php } ?>
 			
-			<input type="submit" value="Loo kasutaja">
+			
 		
 		</form>
 
+		
+		</head>
+	<body>
+
+	
+		
+		<form method="POST">
+			
+			<label>Mobiiltelefoni number</label><br>
+			<input name="number" type="text">
+			
+			<br><br>
+			
+			<label>Riik</label><br>
+			<input name="Country" type="text">
+						
+			<br><br>
+			
+			<input type="submit" value="Loo kasutaja">
+			
+		</form>
+		
+		
+		
 	</body>
 </html>
 
